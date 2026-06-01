@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>六一儿童节特别通道</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffe3ef 0, transparent 32%),
+        radial-gradient(circle at bottom right, #ffe8c8 0, transparent 35%),
+        linear-gradient(135deg, #fff7fb, #fff1dd);
+      color: #6b3f4f;
+      overflow-x: hidden;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 28px 18px;
+      position: relative;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 182, 203, 0.55);
+      border-radius: 28px;
+      box-shadow: 0 20px 60px rgba(230, 120, 160, 0.23);
+      padding: 34px 26px;
+      text-align: center;
+      animation: fadeIn 0.55s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "♡";
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      font-size: 34px;
+      color: rgba(255, 130, 175, 0.35);
+    }
+
+    .card.wide-card {
+      max-width: 920px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 30px;
+      color: #d85b8f;
+      letter-spacing: 1px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: #d85b8f;
+      font-size: 25px;
+    }
+
+    p {
+      line-height: 1.8;
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .small {
+      font-size: 14px;
+      color: #9a6a78;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 18px 0 14px;
+      border-radius: 18px;
+      border: 1px solid #f3adc7;
+      outline: none;
+      font-size: 16px;
+      text-align: center;
+      color: #6b3f4f;
+      background: #fffafd;
+    }
+
+    input:focus {
+      border-color: #e86a9e;
+      box-shadow: 0 0 0 4px rgba(232, 106, 158, 0.12);
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 13px 22px;
+      margin: 8px 5px;
+      background: linear-gradient(135deg, #ff8dbc, #ffb86c);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(232, 106, 158, 0.22);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 13px 24px rgba(232, 106, 158, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .secondary {
+      background: #fff2f7;
+      color: #d85b8f;
+      border: 1px solid #ffc0d8;
+      box-shadow: none;
+    }
+
+    .choice.selected {
+      background: linear-gradient(135deg, #ff6fa8, #ff9f55);
+      transform: scale(1.03);
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .question {
+      background: #fff8fb;
+      border: 1px dashed #ffc2d8;
+      border-radius: 20px;
+      padding: 16px 12px;
+      margin: 14px 0;
+    }
+
+    .certificate {
+      background: linear-gradient(180deg, #fffaf0, #fff6fb);
+      border: 2px solid #ffc77e;
+      border-radius: 24px;
+      padding: 24px 18px;
+      margin: 18px 0;
+      position: relative;
+    }
+
+    .certificate::after {
+      content: "🎀";
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 30px;
+    }
+
+    .cert-title {
+      font-size: 23px;
+      font-weight: bold;
+      color: #c9782f;
+      margin: 8px 0 14px;
+    }
+
+    .cert-line {
+      background: rgba(255, 255, 255, 0.65);
+      border-radius: 14px;
+      padding: 9px 12px;
+      margin: 8px 0;
+      text-align: left;
+    }
+
+    .lottery-stage {
+      min-height: 154px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 0 8px;
+      position: relative;
+    }
+
+    .lottery-box {
+      width: 150px;
+      height: 116px;
+      position: relative;
+      transform-origin: center bottom;
+    }
+
+    .lottery-box.shaking {
+      animation: boxShake 0.55s ease-in-out;
+    }
+
+    .box-lid {
+      width: 126px;
+      height: 34px;
+      border-radius: 18px 18px 10px 10px;
+      background: linear-gradient(135deg, #ff9dc5, #ffc06d);
+      position: absolute;
+      top: 6px;
+      left: 12px;
+      box-shadow: 0 10px 18px rgba(216, 91, 143, 0.18);
+      z-index: 3;
+    }
+
+    .box-lid::after {
+      content: "♡";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .box-body {
+      width: 136px;
+      height: 82px;
+      border-radius: 18px 18px 22px 22px;
+      background:
+        linear-gradient(90deg, transparent 45%, rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0.35) 55%, transparent 55%),
+        linear-gradient(145deg, #ff78ad, #ffb56c);
+      position: absolute;
+      left: 7px;
+      bottom: 0;
+      box-shadow: 0 16px 30px rgba(216, 91, 143, 0.28);
+      z-index: 2;
+    }
+
+    .box-ticket {
+      width: 88px;
+      height: 52px;
+      border-radius: 12px;
+      background: #fffafc;
+      border: 1px dashed #ffadc9;
+      position: absolute;
+      left: 31px;
+      bottom: 42px;
+      transform: translateY(20px) scale(0.8);
+      opacity: 0;
+      z-index: 1;
+      color: #d85b8f;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 18px rgba(216, 91, 143, 0.16);
+    }
+
+    .lottery-box.drawing .box-ticket {
+      animation: ticketPop 0.7s ease forwards;
+    }
+
+    .draw-count {
+      color: #9a6a78;
+      font-size: 14px;
+      margin: 4px 0 12px;
+    }
+
+    .reward-box {
+      min-height: 110px;
+      margin: 18px 0;
+      padding: 22px 16px;
+      border-radius: 22px;
+      background: #fff8fb;
+      border: 1px dashed #ffadc9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      color: #d85b8f;
+      line-height: 1.7;
+    }
+
+    .food-wall {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px 18px;
+      margin: 26px 0 20px;
+      padding: 4px;
+    }
+
+    .polaroid {
+      width: 100%;
+      min-height: 190px;
+      margin: 0;
+      padding: 11px 11px 34px;
+      border: 0;
+      border-radius: 14px;
+      background: #fffefe;
+      box-shadow: 0 14px 28px rgba(205, 97, 136, 0.2);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transform: rotate(var(--tilt));
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .polaroid:hover {
+      transform: rotate(var(--tilt)) translateY(-4px) scale(1.02);
+      box-shadow: 0 18px 34px rgba(205, 97, 136, 0.27);
+    }
+
+    .polaroid.opened {
+      cursor: default;
+    }
+
+    .polaroid-photo {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      background: #fff4f8;
+    }
+
+    .polaroid-note {
+      position: absolute;
+      inset: 11px 11px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      border-radius: 10px;
+      background:
+        radial-gradient(circle at top left, rgba(255, 207, 224, 0.9), transparent 52%),
+        linear-gradient(145deg, #fff8fb, #fff3df);
+      border: 1px dashed #ffbdd4;
+      color: #d85b8f;
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.55;
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+
+    .polaroid.opened .polaroid-photo {
+      opacity: 1;
+    }
+
+    .polaroid.opened .polaroid-note {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .food-next {
+      opacity: 0.78;
+      transform: scale(0.98);
+    }
+
+    .food-next.ready {
+      opacity: 1;
+      transform: scale(1);
+      animation: softPulse 1.2s ease-in-out infinite alternate;
+    }
+
+    .final-message {
+      text-align: left;
+      background: #fff8fb;
+      border-radius: 22px;
+      padding: 20px;
+      border: 1px solid #ffd0df;
+      margin-top: 18px;
+    }
+
+    .final-message.love-note {
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .love-title {
+      margin: 0 0 10px;
+      color: #d85b8f;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .love-kiss {
+      margin: 0;
+      color: #9a6a78;
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .emoji-row {
+      font-size: 26px;
+      margin: 12px 0;
+    }
+
+    .notice {
+      color: #d85b8f;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .floating {
+      position: fixed;
+      pointer-events: none;
+      animation: floatUp 4s linear forwards;
+      font-size: 22px;
+      z-index: 999;
+    }
+
+    .decor {
+      position: fixed;
+      opacity: 0.5;
+      animation: gentleFloat 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .decor.one {
+      top: 10%;
+      left: 8%;
+      font-size: 42px;
+    }
+
+    .decor.two {
+      bottom: 12%;
+      right: 8%;
+      font-size: 46px;
+      animation-delay: 1s;
+    }
+
+    .decor.three {
+      top: 18%;
+      right: 12%;
+      font-size: 34px;
+      animation-delay: 2s;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) scale(1.5);
+      }
+    }
+
+    @keyframes gentleFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-14px);
+      }
+    }
+
+    @keyframes boxShake {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      20% {
+        transform: rotate(-7deg) translateX(-4px);
+      }
+      40% {
+        transform: rotate(6deg) translateX(4px);
+      }
+      60% {
+        transform: rotate(-5deg) translateX(-3px);
+      }
+      80% {
+        transform: rotate(4deg) translateX(3px);
+      }
+    }
+
+    @keyframes ticketPop {
+      0% {
+        opacity: 0;
+        transform: translateY(24px) scale(0.78) rotate(-8deg);
+      }
+      55% {
+        opacity: 1;
+        transform: translateY(-54px) scale(1.05) rotate(5deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(-42px) scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes softPulse {
+      from {
+        box-shadow: 0 10px 20px rgba(232, 106, 158, 0.18);
+      }
+      to {
+        box-shadow: 0 13px 28px rgba(232, 106, 158, 0.34);
+      }
+    }
+
+    @media (max-width: 820px) {
+      .food-wall {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        padding: 28px 18px;
+        border-radius: 24px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .love-title {
+        font-size: 22px;
+      }
+
+      .love-kiss {
+        font-size: 17px;
+      }
+
+      button {
+        width: 100%;
+        margin: 7px 0;
+      }
+
+      .food-wall {
+        gap: 16px 12px;
+      }
+
+      .polaroid {
+        min-height: 160px;
+        padding: 8px 8px 28px;
+      }
+
+      .polaroid-note {
+        inset: 8px 8px 28px;
+        font-size: 13px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="decor one">🎈</div>
+  <div class="decor two">🍬</div>
+  <div class="decor three">⭐</div>
+
+  <main class="page">
+    <section class="card">
+
+      <!-- 第一屏：身份验证 -->
+      <div class="screen active" id="screen-1">
+        <div class="emoji-row">🎀🧸🎈</div>
+        <h1>六一儿童节特别通道</h1>
+        <p>请输入今日小朋友姓名</p>
+        <p class="small">通过认证后，即可领取女朋友准备的儿童节奖励。</p>
+
+        <input id="nameInput" type="text" placeholder="比如：Bowen" />
+        <button id="startBtn">开始认证</button>
+
+        <p class="notice" id="nameNotice"></p>
+      </div>
+
+      <!-- 第二屏：资格审核 -->
+      <div class="screen" id="screen-2">
+        <div class="emoji-row">🔍💗📝</div>
+        <h2>小朋友资格审核中</h2>
+        <p class="small">请认真回答以下问题，审核结果会非常严格，也会非常偏心。</p>
+
+        <div class="question">
+          <p>1. 今天有没有想女朋友？</p>
+          <button class="secondary choice">有</button>
+          <button class="secondary choice">超级有</button>
+        </div>
+
+        <div class="question">
+          <p>2. 有没有乖乖吃饭？</p>
+          <button class="secondary choice">有乖乖吃</button>
+          <button class="secondary choice">等你监督</button>
+        </div>
+
+        <div class="question">
+          <p>3. 崽崽是？</p>
+          <button class="secondary choice">Coco</button>
+          <button class="secondary choice">Barry</button>
+          <button class="secondary choice" data-correct="true">Boki</button>
+        </div>
+
+        <button id="submitAuditBtn">提交审核</button>
+        <p class="notice" id="auditNotice"></p>
+      </div>
+
+      <!-- 第三屏：认证书 -->
+      <div class="screen" id="screen-3">
+        <div class="emoji-row">🏆✨💌</div>
+        <h2>审核通过</h2>
+
+        <div class="certificate">
+          <div class="cert-title">儿童节小朋友认证书</div>
+
+          <p id="certName">经审核，宝宝小朋友具备以下特征：</p>
+
+          <div class="cert-line">可爱指数：100%</div>
+          <div class="cert-line">被偏爱指数：100%</div>
+          <div class="cert-line">撒娇资格：永久有效</div>
+          <div class="cert-line">女朋友亲亲领取权：无限次</div>
+          <div class="cert-line">认证人：最喜欢你的女朋友</div>
+          <div class="cert-line">证书编号：LOVE-0601-ONLY-001</div>
+          <div class="cert-line">日期：2026.06.01</div>
+        </div>
+
+        <button id="goRewardBtn">领取儿童节奖励</button>
+      </div>
+
+      <!-- 第四屏：奖励抽奖机 -->
+      <div class="screen" id="screen-4">
+        <div class="emoji-row">🎁🎡🍭</div>
+        <h2>小朋友奖励抽奖机</h2>
+        <p class="small">点击按钮，抽取今日限定奖励。</p>
+
+        <div class="lottery-stage" aria-hidden="true">
+          <div class="lottery-box" id="lotteryBox">
+            <div class="box-ticket">券</div>
+            <div class="box-lid"></div>
+            <div class="box-body"></div>
+          </div>
+        </div>
+
+        <div class="reward-box" id="rewardBox">
+          等待小朋友点击抽奖……
+        </div>
+
+        <button id="drawBtn">点击抽取你的六一奖励</button>
+        <p class="draw-count" id="drawCountText">还可以抽 3 张奖励券</p>
+        <button class="secondary" id="secretBtn">解锁我们的投喂记录</button>
+
+        <p class="notice">所有奖励最终解释权归女朋友所有。</p>
+      </div>
+
+      <!-- 第五屏：投喂记录 -->
+      <div class="screen" id="screen-5">
+        <div class="emoji-row">🍽️📸💗</div>
+        <h2>我们的投喂记录 🍽️</h2>
+        <p class="small">这里藏着一些和你一起吃过的开心瞬间。</p>
+
+        <div class="food-wall" id="foodWall"></div>
+
+        <button class="secondary food-next" id="foodNextBtn">继续查看女朋友的秘密祝福</button>
+      </div>
+
+      <!-- 第六屏：秘密祝福 -->
+      <div class="screen" id="screen-6">
+        <div class="emoji-row">💗🌙🧸</div>
+        <h2>女朋友的秘密祝福</h2>
+
+        <div class="final-message love-note">
+          <p class="love-title" id="finalName">喜欢和Bowen一起玩游戏</p>
+        </div>
+
+        <button class="secondary" id="restartBtn">再看一遍</button>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    let boyfriendName = "宝宝";
+
+    const screens = document.querySelectorAll(".screen");
+    const mainCard = document.querySelector(".card");
+    const nameInput = document.getElementById("nameInput");
+    const nameNotice = document.getElementById("nameNotice");
+    const auditNotice = document.getElementById("auditNotice");
+
+    const rewards = [
+      "亲亲券一次 💋<br><span class='small'>可立即兑换，也可以永久保留。</span>",
+      "抱抱券一次 🤍<br><span class='small'>有效期：永远。过期也能用。</span>",
+      "陪你打游戏券一次 🎮<br><span class='small'>女朋友会尽量不嫌你菜。</span>",
+      "女朋友夸夸三句 🌟<br><span class='small'>今日限定：可以重复领取。</span>",
+      "今日不许不开心券 🍬<br><span class='small'>不开心的时候，女朋友负责哄。</span>",
+      "女朋友哄哄券一次 🧸<br><span class='small'>使用后获得温柔哄哄服务。</span>",
+      "一起吃好吃的券一次 🍰<br><span class='small'>由小朋友负责点菜，女朋友负责陪你。</span>"
+    ];
+
+    const foodMemories = [
+      {
+        text: "第一次约会，点击解锁 ♡",
+        image: "images/food1.jpg"
+      },
+      {
+        text: "bowen说喜欢我，点击解锁 ♡",
+        image: "images/food2.jpg"
+      },
+      {
+        text: "情人节，点击解锁 ♡",
+        image: "images/food3.jpg"
+      },
+      {
+        text: "好多小狗狗，点击解锁 ♡",
+        image: "images/food4.jpg"
+      },
+      {
+        text: "早上吃brunch，点击解锁 ♡",
+        image: "images/food5.jpg"
+      },
+      {
+        text: "Thai Food，点击解锁 ♡",
+        image: "images/food6.jpg"
+      },
+      {
+        text: "叶子掉下来，点击解锁 ♡",
+        image: "images/food7.jpg"
+      },
+      {
+        text: "一起看书书，点击解锁 ♡",
+        image: "images/food8.jpg"
+      }
+    ];
+
+    let openedFoodCards = 0;
+    const maxDraws = 3;
+    let drawCount = 0;
+    let remainingRewards = [...rewards];
+
+    function showScreen(number) {
+      screens.forEach(screen => screen.classList.remove("active"));
+      document.getElementById(`screen-${number}`).classList.add("active");
+      mainCard.classList.toggle("wide-card", number === 5);
+      createFloatingHearts();
+    }
+
+    function renderFoodMemories() {
+      const foodWall = document.getElementById("foodWall");
+      const tilts = [-5, 3, -2, 4, 2, -4, 5, -3];
+
+      foodWall.innerHTML = "";
+      openedFoodCards = 0;
+
+      foodMemories.forEach((memory, index) => {
+        const card = document.createElement("button");
+        card.className = "polaroid";
+        card.type = "button";
+        card.style.setProperty("--tilt", `${tilts[index]}deg`);
+        card.setAttribute("aria-label", memory.text);
+
+        const image = document.createElement("img");
+        image.className = "polaroid-photo";
+        image.src = memory.image;
+        image.alt = memory.text.replace("，点击解锁 ♡", "");
+
+        const note = document.createElement("span");
+        note.className = "polaroid-note";
+        note.textContent = memory.text;
+
+        card.appendChild(image);
+        card.appendChild(note);
+
+        card.addEventListener("click", () => {
+          if (card.classList.contains("opened")) {
+            return;
+          }
+
+          card.classList.add("opened");
+          openedFoodCards += 1;
+          createFloatingHearts();
+
+          if (openedFoodCards === foodMemories.length) {
+            document.getElementById("foodNextBtn").classList.add("ready");
+          }
+        });
+
+        foodWall.appendChild(card);
+      });
+
+      document.getElementById("foodNextBtn").classList.remove("ready");
+    }
+
+    function resetLottery() {
+      drawCount = 0;
+      remainingRewards = [...rewards];
+      document.getElementById("drawBtn").disabled = false;
+      document.getElementById("drawBtn").textContent = "点击抽取你的六一奖励";
+      document.getElementById("drawCountText").textContent = "还可以抽 3 张奖励券";
+      document.getElementById("rewardBox").innerHTML = "等待小朋友点击抽奖……";
+    }
+
+    function updateDrawLimitText() {
+      const left = maxDraws - drawCount;
+      const drawBtn = document.getElementById("drawBtn");
+      const drawCountText = document.getElementById("drawCountText");
+
+      if (left <= 0) {
+        drawBtn.disabled = true;
+        drawBtn.textContent = "三张奖励券已经抽完啦";
+        drawCountText.textContent = "今日抽奖次数已用完，奖励要慢慢兑换哦～";
+        return;
+      }
+
+      drawCountText.textContent = `还可以抽 ${left} 张奖励券`;
+    }
+
+    function createFloatingHearts() {
+      const symbols = ["💗", "⭐", "🎈", "♡", "🍬"];
+      for (let i = 0; i < 10; i++) {
+        const span = document.createElement("span");
+        span.className = "floating";
+        span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        span.style.left = Math.random() * 100 + "vw";
+        span.style.top = 70 + Math.random() * 20 + "vh";
+        span.style.animationDelay = Math.random() * 0.8 + "s";
+        document.body.appendChild(span);
+
+        setTimeout(() => {
+          span.remove();
+        }, 4500);
+      }
+    }
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      const value = nameInput.value.trim();
+
+      if (value === "") {
+        nameNotice.textContent = "要先输入名字哦～";
+        return;
+      }
+
+      if (value !== "Bowen") {
+        nameNotice.textContent = "认证失败：今天的小朋友名字必须是 Bowen 哦～";
+        return;
+      }
+
+      boyfriendName = value;
+      nameNotice.textContent = "";
+      showScreen(2);
+    });
+
+    document.querySelectorAll(".choice").forEach(button => {
+      button.addEventListener("click", () => {
+        const parent = button.parentElement;
+        parent.querySelectorAll(".choice").forEach(btn => {
+          btn.classList.remove("selected");
+        });
+        button.classList.add("selected");
+      });
+    });
+
+    document.getElementById("submitAuditBtn").addEventListener("click", () => {
+      const thirdAnswer = document.querySelectorAll(".question")[2].querySelector(".choice.selected");
+
+      if (!thirdAnswer || thirdAnswer.dataset.correct !== "true") {
+        auditNotice.textContent = "第三题答错啦，崽崽当然是 Boki～";
+        return;
+      }
+
+      auditNotice.textContent = "";
+      document.getElementById("certName").textContent =
+        `经审核，${boyfriendName} 小朋友具备以下特征：`;
+      showScreen(3);
+    });
+
+    document.getElementById("goRewardBtn").addEventListener("click", () => {
+      resetLottery();
+      showScreen(4);
+    });
+
+    document.getElementById("drawBtn").addEventListener("click", () => {
+      if (drawCount >= maxDraws) {
+        return;
+      }
+
+      const rewardBox = document.getElementById("rewardBox");
+      const drawBtn = document.getElementById("drawBtn");
+      const lotteryBox = document.getElementById("lotteryBox");
+      const randomIndex = Math.floor(Math.random() * remainingRewards.length);
+      const randomReward = remainingRewards.splice(randomIndex, 1)[0];
+
+      drawCount += 1;
+      drawBtn.disabled = true;
+      lotteryBox.classList.remove("shaking", "drawing");
+      void lotteryBox.offsetWidth;
+      lotteryBox.classList.add("shaking", "drawing");
+
+      rewardBox.innerHTML = "抽奖箱摇一摇……🎁";
+
+      setTimeout(() => {
+        rewardBox.innerHTML = randomReward;
+        lotteryBox.classList.remove("shaking", "drawing");
+        drawBtn.disabled = false;
+        updateDrawLimitText();
+        createFloatingHearts();
+      }, 760);
+    });
+
+    document.getElementById("secretBtn").addEventListener("click", () => {
+      renderFoodMemories();
+      showScreen(5);
+    });
+
+    document.getElementById("foodNextBtn").addEventListener("click", () => {
+      document.getElementById("finalName").textContent =
+        "喜欢和Bowen一起玩游戏";
+      showScreen(6);
+    });
+
+    document.getElementById("restartBtn").addEventListener("click", () => {
+      showScreen(1);
+    });
+  </script>
+</body>
+</html>
